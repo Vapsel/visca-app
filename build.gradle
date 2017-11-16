@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'visca_lib'
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'pl.edu.agh.kis.visca.Main'
+    }
+}
+
+dependencies {
+    compile name: 'jssc'
+}
+
+task fatJar(type: Jar) {
+    manifest = jar.manifest
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
