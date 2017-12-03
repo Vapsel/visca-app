@@ -33,8 +33,8 @@ public class PositionController {
         PositionDirection positionDirection = PositionDirection.valueOf(direction);
         String response = null;
         switch (positionDirection) {
-            case UP:
-                response = viscaCommandSender.sendPanTiltUp();
+            case UP: response = viscaCommandSender.sendPanTiltUp(); break;
+            case DOWN: response = viscaCommandSender.sendPanTiltDown(); break;
         }
 
         logger.debug("Response: " + response);

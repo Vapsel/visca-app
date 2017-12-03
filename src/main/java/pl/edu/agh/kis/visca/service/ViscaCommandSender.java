@@ -171,7 +171,7 @@ public class ViscaCommandSender {
 
                 sleep(16);
                 System.out.println("Down");
-                sendPanTiltDown(serialPort);
+//                sendPanTiltDown(serialPort);
 
                 try {
                     response = ViscaResponseReader.readResponse(serialPort);
@@ -285,7 +285,7 @@ public class ViscaCommandSender {
         return retrieveResponse();
     }
 
-    private static void sendPanTiltDown(SerialPort serialPort) throws SerialPortException {
+    public String sendPanTiltDown() throws SerialPortException, TimeoutException {
         byte[] cmdData = (new PanTiltDownCmd()).createCommandData();
         ViscaCommand vCmd = new ViscaCommand();
         vCmd.commandData = cmdData;
@@ -294,6 +294,7 @@ public class ViscaCommandSender {
         cmdData = vCmd.getCommandData();
         System.out.println("@ " + byteArrayToString(cmdData));
         serialPort.writeBytes(cmdData);
+        return retrieveResponse();
     }
 
     private static void sendPanTiltAbsolutePos(SerialPort serialPort) throws SerialPortException {
