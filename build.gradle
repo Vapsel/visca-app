@@ -1,8 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'idea'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+apply plugin: 'org.springframework.boot'
 
 repositories {
     mavenCentral()
@@ -11,14 +18,27 @@ repositories {
     }
 }
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'pl.edu.agh.kis.visca.Main'
-    }
-}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version =  '0.1.0'
 
 dependencies {
     compile name: 'jssc'
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.5.9.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '1.5.9.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '1.5.9.RELEASE'
+    runtime group: 'net.sourceforge.nekohtml', name: 'nekohtml', version: '1.9.15'
+}
+
+//--------------------------------------------- TASK SECTION
+jar {
+    baseName = 'visca-web'
+
+    manifest {
+        attributes 'Main-Class': 'pl.edu.agh.kis.visca.Main'
+    }
 }
 
 task fatJar(type: Jar) {

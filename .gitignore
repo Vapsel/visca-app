@@ -1,0 +1,4 @@
+# Ignore folders
+.gradle/
+.idea/
+out/
