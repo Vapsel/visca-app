@@ -1,9 +1,4 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
-package pl.edu.agh.kis.visca.cmd;
+package pl.edu.agh.kis.visca.service.commands;
 
 public final class PanTiltRightCmd extends Cmd {
     private static final byte[] ptRightCommandData = new byte[]{1, 6, 1, 0, 0, 2, 3};

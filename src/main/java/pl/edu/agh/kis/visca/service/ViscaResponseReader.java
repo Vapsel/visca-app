@@ -1,9 +1,4 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
-package pl.edu.agh.kis.visca;
+package pl.edu.agh.kis.visca.service;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;

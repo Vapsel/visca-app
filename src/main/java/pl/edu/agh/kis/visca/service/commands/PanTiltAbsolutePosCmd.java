@@ -1,9 +1,4 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
-package pl.edu.agh.kis.visca.cmd;
+package pl.edu.agh.kis.visca.service.commands;
 
 public final class PanTiltAbsolutePosCmd extends Cmd {
     private static final byte[] ptAbsolutPosCommandData = new byte[]{1, 6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};

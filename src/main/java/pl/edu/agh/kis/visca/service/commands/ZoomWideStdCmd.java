@@ -1,9 +1,4 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
-package pl.edu.agh.kis.visca.cmd;
+package pl.edu.agh.kis.visca.service.commands;
 
 public final class ZoomWideStdCmd extends Cmd {
     private static final byte[] ptWideStdCommandData = new byte[]{1, 4, 7, 3};

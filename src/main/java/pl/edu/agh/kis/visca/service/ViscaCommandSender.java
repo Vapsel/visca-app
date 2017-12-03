@@ -1,37 +1,44 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
-package pl.edu.agh.kis.visca;
+package pl.edu.agh.kis.visca.service;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
-import pl.edu.agh.kis.visca.ViscaResponseReader.TimeoutException;
-import pl.edu.agh.kis.visca.cmd.AddressCmd;
-import pl.edu.agh.kis.visca.cmd.ClearAllCmd;
-import pl.edu.agh.kis.visca.cmd.GetPanTiltMaxSpeedCmd;
-import pl.edu.agh.kis.visca.cmd.PanTiltAbsolutePosCmd;
-import pl.edu.agh.kis.visca.cmd.PanTiltDownCmd;
-import pl.edu.agh.kis.visca.cmd.PanTiltHomeCmd;
-import pl.edu.agh.kis.visca.cmd.PanTiltLeftCmd;
-import pl.edu.agh.kis.visca.cmd.PanTiltRightCmd;
-import pl.edu.agh.kis.visca.cmd.PanTiltUpCmd;
-import pl.edu.agh.kis.visca.cmd.ViscaCommand;
-import pl.edu.agh.kis.visca.cmd.ZoomTeleStdCmd;
-import pl.edu.agh.kis.visca.cmd.ZoomWideStdCmd;
+import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import pl.edu.agh.kis.visca.service.ViscaResponseReader.TimeoutException;
+import pl.edu.agh.kis.visca.service.commands.*;
 
-public class Main {
-    public Main() {
+import javax.annotation.PostConstruct;
+
+@Service
+public class ViscaCommandSender {
+
+    private final Logger logger = LoggerFactory.getLogger(ViscaCommandSender.class);
+
+    @Getter
+    private SerialPort serialPort;
+
+    @PostConstruct
+    private void postConstruct(){
+
+        String com = "COM11";
+        try {
+            serialPort = new SerialPort(com);
+            serialPort.openPort();
+            serialPort.setParams(9600, 8, 1, 0);
+        } catch (SerialPortException e) {
+            logger.error("Problem to open serial port " + com, e);
+        }
+
     }
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         String commName = args[0];
         SerialPort serialPort = new SerialPort(commName);
 
         try {
-            serialPort.openPort();
-            serialPort.setParams(9600, 8, 1, 0);
+
             System.out.println("Address");
             sendAddress(serialPort);
 
@@ -122,7 +129,7 @@ public class Main {
 
                 sleep(24);
                 System.out.println("Up");
-                sendPanTiltUp(serialPort);
+//                sendPanTiltUp(serialPort);
 
                 try {
                     response = ViscaResponseReader.readResponse(serialPort);
@@ -266,7 +273,7 @@ public class Main {
         serialPort.writeBytes(cmdData);
     }
 
-    private static void sendPanTiltUp(SerialPort serialPort) throws SerialPortException {
+    public String sendPanTiltUp() throws SerialPortException, TimeoutException {
         byte[] cmdData = (new PanTiltUpCmd()).createCommandData();
         ViscaCommand vCmd = new ViscaCommand();
         vCmd.commandData = cmdData;
@@ -275,6 +282,7 @@ public class Main {
         cmdData = vCmd.getCommandData();
         System.out.println("@ " + byteArrayToString(cmdData));
         serialPort.writeBytes(cmdData);
+        return retrieveResponse();
     }
 
     private static void sendPanTiltDown(SerialPort serialPort) throws SerialPortException {
@@ -354,5 +362,10 @@ public class Main {
         cmdData = vCmd.getCommandData();
         System.out.println("@ " + byteArrayToString(cmdData));
         serialPort.writeBytes(cmdData);
+    }
+
+    private String retrieveResponse() throws TimeoutException, SerialPortException {
+        byte[] response = ViscaResponseReader.readResponse(serialPort);
+        return byteArrayToString(response);
     }
 }
