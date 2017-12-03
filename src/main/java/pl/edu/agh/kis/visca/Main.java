@@ -13,12 +13,14 @@ import pl.edu.agh.kis.visca.cmd.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
     public Main() {
     }
 
-    public static void runUserCommands(String userInput,  SerialPort serialPort) {
+    public static void runUserCommands(String userInput, SerialPort serialPort) {
         String[] tokens = userInput.split(";");
         byte[] response;
 
@@ -27,18 +29,44 @@ public class Main {
                 if (token.startsWith("Wait ")) {
                     String firstNumber = token.replaceAll("^\\D*(\\d+).*", "$1");
                     int sleepFor = Integer.parseInt(firstNumber);
-                    Thread.sleep((long)(sleepFor));
+                    Thread.sleep((long) (sleepFor));
                     continue;
-                } else if (token.startsWith("ptd")) {
-sendPanTiltDown(serialPort);
-                } else if (token.startsWith("ptu")) {
-sendPanTiltUp(serialPort);
-                } else if (token.startsWith("ptl")) {
-                    sendPanTiltLeft(serialPort);
-                } else if (token.startsWith("ptr")) {
-                    sendPanTiltRight(serialPort);
-                }else if (token.startsWith("clear")) {
-                    sendClearAll(serialPort);
+                } else if (token.startsWith("ClearAll")) {
+                     sendClearAll(serialPort);
+//                    System.out.print("sendClearAll(serialPort);");
+                } else if (token.startsWith("PanTiltHome")) {
+                     sendPanTiltHome(serialPort);
+//                    System.out.print("sendPanTiltHome(serialPort);");
+                } else if (token.startsWith("PanTiltLeft")) {
+                     sendPanTiltLeft(serialPort);
+//                    System.out.print("sendPanTiltLeft(serialPort);");
+                } else if (token.startsWith("PanTiltLeft2")) {
+                     sendPanTiltLeft2(serialPort);
+//                    System.out.print("sendPanTiltLeft2(serialPort);");
+                } else if (token.startsWith("PanTiltRight")) {
+                     sendPanTiltRight(serialPort);
+//                    System.out.print("sendPanTiltRight(serialPort);");
+                } else if (token.startsWith("PanTiltRight2")) {
+                     sendPanTiltRight2(serialPort);
+//                    System.out.print("sendPanTiltRight2(serialPort);");
+                } else if (token.startsWith("PanTiltUp")) {
+                     sendPanTiltUp(serialPort);
+//                    System.out.print("sendPanTiltUp(serialPort);");
+                } else if (token.startsWith("PanTiltDown")) {
+                     sendPanTiltDown(serialPort);
+//                    System.out.print("sendPanTiltDown(serialPort);");
+                } else if (token.startsWith("PanTiltAbsolutePos")) {
+                     sendPanTiltAbsolutePos(serialPort);
+//                    System.out.print("sendPanTiltAbsolutePos(serialPort);");
+                } else if (token.startsWith("Address")) {
+                    sendAddress(serialPort);
+                    System.out.print("sendAddress(serialPort);");
+                } else if (token.startsWith("GetPanTiltMaxSpeed")) {
+                    sendGetPanTiltMaxSpeed(serialPort);
+                } else if (token.startsWith("ZoomTeleStd")) {
+                    sendZoomTeleStd(serialPort);
+                } else if (token.startsWith("ZoomWideStd")) {
+                    sendZoomWideStd(serialPort);
                 }
 
                 try {
@@ -49,17 +77,18 @@ sendPanTiltUp(serialPort);
                 }
             }
         } catch (SerialPortException var18) {
-        System.out.println(var18);
-    } catch (InterruptedException e) {
+            System.out.println(var18);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
+    private static Map<String, String> macros = new HashMap<>();
+
+
     public static void main(String[] args) throws SerialPortException {
         String commName = args[0];
         SerialPort serialPort = new SerialPort(commName);
-
-        String userInput = "";
 
         serialPort.openPort();
         serialPort.setParams(9600, 8, 1, 0);
@@ -70,182 +99,28 @@ sendPanTiltUp(serialPort);
 
             try {
                 String commands = reader.readLine();
+                String optionalMacro = macros.get(commands);
 
-                if (commands.startsWith("macro ")) {
-                    String macro = commands.substring(6);
+                if (commands.startsWith("macro:")) {
+                    String macroTail = commands.substring(6);
+                    String macroName = macroTail.substring(macroTail.indexOf("(") + 1, macroTail.indexOf(")"));
+                    String macro = macroTail.substring(macroTail.indexOf(")") + 1, macroTail.length());
 
+                    macros.put(macroName, macro);
+                } else if (optionalMacro != null) {
+                    runUserCommands(optionalMacro, serialPort);
+                } else {
+                    runUserCommands(commands, serialPort);
                 }
-                runUserCommands(commands, serialPort);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-//        try {
-//            serialPort.openPort();
-//            serialPort.setParams(9600, 8, 1, 0);
-//            System.out.println("Address");
-//            sendAddress(serialPort);
-//
-//            byte[] response;
-//            try {
-//                response = ViscaResponseReader.readResponse(serialPort);
-//                System.out.println("> " + byteArrayToString(response));
-//            } catch (TimeoutException var17) {
-//                System.out.println("! TIMEOUT exception");
-//            }
-//
-//            sleep(5);
-//            System.out.println("Home");
-//            sendPanTiltHome(serialPort);
-//
-//            try {
-//                response = ViscaResponseReader.readResponse(serialPort);
-//                System.out.println("> " + byteArrayToString(response));
-//            } catch (TimeoutException var16) {
-//                System.out.println("! TIMEOUT exception");
-//            }
-//
-//            sleep(5);
-//            System.out.println("Wide");
-//            sendZoomWideStd(serialPort);
-//
-//            try {
-//                response = ViscaResponseReader.readResponse(serialPort);
-//                System.out.println("> " + byteArrayToString(response));
-//            } catch (TimeoutException var15) {
-//                System.out.println("! TIMEOUT exception");
-//            }
-//
-//            sleep(10);
-//            System.out.println("Tele");
-//            sendZoomTeleStd(serialPort);
-//
-//            try {
-//                response = ViscaResponseReader.readResponse(serialPort);
-//                System.out.println("> " + byteArrayToString(response));
-//            } catch (TimeoutException var14) {
-//                System.out.println("! TIMEOUT exception");
-//            }
-//
-//            sleep(10);
-//            System.out.println("Get Pan TiltMax Speed");
-//            sendGetPanTiltMaxSpeed(serialPort);
-//
-//            try {
-//                response = ViscaResponseReader.readResponse(serialPort);
-//                System.out.println("> " + byteArrayToString(response));
-//            } catch (TimeoutException var13) {
-//                System.out.println("! TIMEOUT exception");
-//            }
-//
-//            sleep(10);
-//            System.out.println("Absolute Pos");
-//            sendPanTiltAbsolutePos(serialPort);
-//
-//            try {
-//                response = ViscaResponseReader.readResponse(serialPort);
-//                System.out.println("> " + byteArrayToString(response));
-//            } catch (TimeoutException var12) {
-//                System.out.println("! TIMEOUT exception");
-//            }
-//
-//            sleep(5);
-
-//            while(true) {
-//                System.out.println("Right");
-//                sendPanTiltRight(serialPort);
-//
-//                try {
-//                    response = ViscaResponseReader.readResponse(serialPort);
-//                    System.out.println("> " + byteArrayToString(response));
-//                } catch (TimeoutException var11) {
-//                    System.out.println("! TIMEOUT exception");
-//                }
-//
-//                sendPanTiltRight2(serialPort);
-//
-//                try {
-//                    response = ViscaResponseReader.readResponse(serialPort);
-//                    System.out.println("> " + byteArrayToString(response));
-//                } catch (TimeoutException var10) {
-//                    System.out.println("! TIMEOUT exception");
-//                }
-//
-//                sleep(24);
-//                System.out.println("Up");
-//                sendPanTiltUp(serialPort);
-//
-//                try {
-//                    response = ViscaResponseReader.readResponse(serialPort);
-//                    System.out.println("> " + byteArrayToString(response));
-//                } catch (TimeoutException var9) {
-//                    System.out.println("! TIMEOUT exception");
-//                }
-//
-//                sleep(8);
-//                System.out.println("Tele");
-//                sendZoomTeleStd(serialPort);
-//
-//                try {
-//                    response = ViscaResponseReader.readResponse(serialPort);
-//                    System.out.println("> " + byteArrayToString(response));
-//                } catch (TimeoutException var8) {
-//                    System.out.println("! TIMEOUT exception");
-//                }
-//
-//                sleep(14);
-//                System.out.println("Left");
-//                sendPanTiltLeft(serialPort);
-//
-//                try {
-//                    response = ViscaResponseReader.readResponse(serialPort);
-//                    System.out.println("> " + byteArrayToString(response));
-//                } catch (TimeoutException var7) {
-//                    System.out.println("! TIMEOUT exception");
-//                }
-//
-//                sendPanTiltLeft2(serialPort);
-//
-//                try {
-//                    response = ViscaResponseReader.readResponse(serialPort);
-//                    System.out.println("> " + byteArrayToString(response));
-//                } catch (TimeoutException var6) {
-//                    System.out.println("! TIMEOUT exception");
-//                }
-//
-//                sleep(16);
-//                System.out.println("Down");
-//                sendPanTiltDown(serialPort);
-//
-//                try {
-//                    response = ViscaResponseReader.readResponse(serialPort);
-//                    System.out.println("> " + byteArrayToString(response));
-//                } catch (TimeoutException var5) {
-//                    System.out.println("! TIMEOUT exception");
-//                }
-//
-//                sleep(12);
-//                System.out.println("Wide");
-//                sendZoomWideStd(serialPort);
-//
-//                try {
-//                    response = ViscaResponseReader.readResponse(serialPort);
-//                    System.out.println("> " + byteArrayToString(response));
-//                } catch (TimeoutException var4) {
-//                    System.out.println("! TIMEOUT exception");
-//                }
-//
-//                sleep(10);
-//            }
-//        } catch (SerialPortException var18) {
-//            System.out.println(var18);
-//        }
     }
 
     private static void sleep(int timeSec) {
         try {
-            Thread.sleep((long)(timeSec * 1000));
+            Thread.sleep((long) (timeSec * 1000));
         } catch (InterruptedException var2) {
             var2.printStackTrace();
         }
@@ -378,7 +253,7 @@ sendPanTiltUp(serialPort);
         byte[] var5 = bytes;
         int var4 = bytes.length;
 
-        for(int var3 = 0; var3 < var4; ++var3) {
+        for (int var3 = 0; var3 < var4; ++var3) {
             byte b = var5[var3];
             sb.append(String.format("%02X ", b));
         }
@@ -408,3 +283,9 @@ sendPanTiltUp(serialPort);
         serialPort.writeBytes(cmdData);
     }
 }
+
+
+
+
+
+
