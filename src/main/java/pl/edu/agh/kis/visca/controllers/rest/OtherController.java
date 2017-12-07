@@ -9,34 +9,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pl.edu.agh.kis.visca.models.PositionDirection;
+import pl.edu.agh.kis.visca.models.OtherCommands;
 import pl.edu.agh.kis.visca.service.ViscaCommandSender;
 import pl.edu.agh.kis.visca.service.ViscaResponseReader;
 
 @RestController
-@RequestMapping("/api/position")
-public class PositionController {
+@RequestMapping("/api/other")
+public class OtherController {
 
-    private final Logger logger = LoggerFactory.getLogger(PositionController.class);
+    private final Logger logger = LoggerFactory.getLogger(OtherController.class);
 
     private final ViscaCommandSender viscaCommandSender;
 
     @Autowired
-    public PositionController(ViscaCommandSender viscaCommandSender) {
+    public OtherController(ViscaCommandSender viscaCommandSender) {
         this.viscaCommandSender = viscaCommandSender;
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    private ResponseEntity changePosition(@RequestParam String direction, @RequestParam byte speed)
+    private ResponseEntity changePosition(@RequestParam String command)
         throws SerialPortException, ViscaResponseReader.TimeoutException {
 
-        PositionDirection positionDirection = PositionDirection.valueOf(direction);
         String response = null;
-        switch (positionDirection) {
-            case UP: response = viscaCommandSender.sendPanTiltUp(speed); break;
-            case DOWN: response = viscaCommandSender.sendPanTiltDown(speed); break;
-            case LEFT: response = viscaCommandSender.sendPanTiltLeft(speed); break;
-            case RIGHT: response = viscaCommandSender.sendPanTiltRight(speed); break;
+        switch (OtherCommands.valueOf(command)) {
+            case HOME: response = viscaCommandSender.sendPanTiltHome(); break;
         }
 
         logger.debug("Response: " + response);
