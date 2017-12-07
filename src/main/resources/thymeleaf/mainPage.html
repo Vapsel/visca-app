@@ -18,6 +18,13 @@
 <div class="container">
     <h1>Management of camera via VISCA protocol</h1>
 
+    <h3>Speed</h3>
+    <section class="row">
+        <div class="col-md-4">
+            <input type="number" th:max="${maxSpeed}" min="1" value="8">
+        </div>
+    </section>
+
     <h3>Position</h3>
     <section class="row">
         <div class="col-lg-4">
@@ -25,7 +32,7 @@
                 <button class="col-md-3 offset-md-3 visca-position-up">up</button>
             </div>
             <div class="row">
-                <button class="col-md-3">left</button><button class="col-md-3 offset-md-3">right</button>
+                <button class="col-md-3 visca-position-left">left</button><button class="col-md-3 offset-md-3 visca-position-right">right</button>
             </div>
             <div class="row">
                 <button class="col-md-3 offset-md-3 visca-position-down">down</button>
@@ -37,12 +44,22 @@
     <section class="row">
         <div class="col-lg-4">
             <div class="row">
-                <button class="col-md-3 offset-md-3">+</button>
+                <button class="col-md-3 offset-md-3 visca-zoom-tele">tele</button>
             </div>
             <div class="row">
-                <button class="col-md-3 offset-md-3">-</button>
+                <button class="col-md-3 offset-md-3 visca-zoom-wide">wide</button>
             </div>
         </div>
+    </section>
+
+    <section class="row">
+        <div class="col-md-4">
+            <button type="button" class="visca-other-home">home</button>
+        </div>
+    </section>
+
+    <section class="row">
+        <textarea class="response"></textarea>
     </section>
 </div>
 
