@@ -215,7 +215,9 @@ public class ViscaCommandSender {
     private String retrieveResponse() throws TimeoutException, SerialPortException {
         sleep(1);
         byte[] response = ViscaResponseReader.readResponse(serialPort);
-        if (response[1] == 81){
+        String hex = byteArrayToString(response);
+        System.out.println(hex);
+        if (response[1] == 0x60){
             return "Error";
         } else {
             return "Ok";
